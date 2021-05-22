@@ -2,8 +2,7 @@ import google.auth.transport.requests
 import google.oauth2.id_token
 import requests
 
-from . import Client
-
+from mlchain.client import Client
 
 class GcloudClient(Client):
     def __init__(self, api_key=None, api_address=None, serializer='json', timeout=5 * 60, headers={}, type='http',
