@@ -1,14 +1,11 @@
 import google.auth.transport.requests
 import google.oauth2.id_token
 import requests
-from mlchain import logger
-from mlchain.client import Client
-from mlchain.decorators import except_serving
 
 from . import Client
 
 
-class GcloudClient(Client)
+class GcloudClient(Client):
     def __init__(self, api_key=None, api_address=None, serializer='json', timeout=5 * 60, headers={}, type='http',
                  name: str = "", version: str = "", check_status=False):
         self.id_token = self.get_oauth2_token(api_address)
