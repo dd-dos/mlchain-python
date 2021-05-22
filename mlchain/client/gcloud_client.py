@@ -8,12 +8,12 @@ from . import Client
 class GcloudClient(Client):
     def __init__(self, api_key=None, api_address=None, serializer='json', timeout=5 * 60, headers={}, type='http',
                  name: str = "", version: str = "", check_status=False):
-        self.id_token = self.get_oauth2_token(api_address)
-        self.headers = {"Authorization": f"Bearer {token}"}
+        self.id_token = self._get_oauth2_token(api_address)
+        self.headers = {"Authorization": f"Bearer {self.id_token}"}
         Client.__init__(self, api_key=api_key, api_address=api_address, serializer=serializer, timeout=timeout, headers=self.header, type=type,
                         name=name, version=version, check_status=check_status)
 
-    def get_oauth2_token(self, url):
+    def _get_oauth2_token(self, url):
         """
         new_request creates a new HTTP request with IAM ID Token credential.
         This token is automatically handled by private Cloud Run (fully managed)
