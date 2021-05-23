@@ -16,7 +16,8 @@ class Client(HttpClient, GrpcClient):
         self._timeout = timeout
         if mlconfig.platform == 'gcloud':
             _token = self._get_gcloud_oauth2_token()
-            self._headers = headers.update({"Authorization": f"Bearer {_token}"})
+            headers.update({"Authorization": f"Bearer {_token}"})
+            self._headers = headers
         else:
             self._headers = headers
         self._type = type
