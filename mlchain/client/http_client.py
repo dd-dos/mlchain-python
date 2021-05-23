@@ -4,6 +4,7 @@ import httpx
 from pathlib import Path
 from mlchain.base.log import except_handler, logger
 from mlchain.server.base import RawResponse, JsonResponse
+from mlchain.config import mlconfig
 from .base import MLClient
 from mlchain.base.exceptions import MlChainError
 
@@ -23,7 +24,7 @@ HTTP_ERROR_CODE = {
 class HttpClient(MLClient):
     def __init__(self, api_key=None, api_address=None, serializer='msgpack',
                  image_encoder=None, name=None, version='lastest',
-                 check_status=False, headers=None, **kwargs):
+                 check_status=False, headers={}, **kwargs):
         MLClient.__init__(self, api_key=api_key, api_address=api_address,
                           serializer=serializer, image_encoder=image_encoder,
                           name=name, version=version,
@@ -120,7 +121,31 @@ class HttpClient(MLClient):
         output_decoded = self.serializer.decode(output.content)
         return output_decoded
 
+    def _get_gcloud_oauth2_token(self):
+        """
+        new_request creates a new HTTP request with IAM ID Token credential.
+        This token is automatically handled by private Cloud Run (fully managed)
+        and Cloud Functions.
+        """
+        import google.auth.transport.requests
+        import google.oauth2.id_token
+
+        auth_req = google.auth.transport.requests.Request()
+        target_audience = self.api_address
+
+        id_token = google.oauth2.id_token.fetch_id_token(auth_req, target_audience)
+
+        logger.info("############################################")
+        logger.info(type(id_token))
+        logger.info(id_token)
+        logger.info("############################################")
+
+        return id_token
+
     def _post(self, function_name, headers=None, args=None, kwargs=None):
+        if mlconfig.platform == 'gcloud':
+            _token = self._get_gcloud_oauth2_token()
+            headers['Authorization'] = f"Bearer {_token}"
         files = []
         args = list(args)
         for idx, value in enumerate(args):

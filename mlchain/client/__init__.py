@@ -14,12 +14,13 @@ class Client(HttpClient, GrpcClient):
         self._api_address = api_address
         self._serializer = serializer
         self._timeout = timeout
-        if mlconfig.platform == 'gcloud':
-            _token = self._get_gcloud_oauth2_token()
-            headers.update({"Authorization": f"Bearer {_token}"})
-            self._headers = headers
-        else:
-            self._headers = headers
+        # if mlconfig.platform == 'gcloud':
+        #     _token = self._get_gcloud_oauth2_token()
+        #     headers.update({"Authorization": f"Bearer {_token}"})
+        #     self._headers = headers
+        # else:
+        #     self._headers = headers
+        self._headers = headers
         self._type = type
         if self._type.lower() == 'http':
             HttpClient.__init__(self, api_key=api_key, api_address=api_address, serializer=serializer,
