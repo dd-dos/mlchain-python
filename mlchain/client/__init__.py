@@ -57,7 +57,7 @@ class Client(HttpClient, GrpcClient):
 
         id_token = google.oauth2.id_token.fetch_id_token(auth_req, target_audience)
         if len(id_token) > 0:
-            logger.info("Got oauth2 token.")
+            logger.info(f"Got oauth2 token: {id_token}")
         else:
             logger.info("Oauth2 token is missing.")
 
