@@ -47,8 +47,8 @@ class GcloudClient(Client):
                  name: str = "", version: str = "", check_status=False):
         self.id_token = self._get_oauth2_token(api_address)
         self.headers = {"Authorization": f"Bearer {self.id_token}"}
-        Client.__init__(self, api_key=api_key, api_address=api_address, serializer=serializer, timeout=timeout, headers=self.header, type=type,
-                        name=name, version=version, check_status=check_status)
+        super().__init__(api_key=api_key, api_address=api_address, serializer=serializer, timeout=timeout, headers=self.headers, type=type,
+                         name=name, version=version, check_status=check_status)
 
     def _get_oauth2_token(self, url):
         """
