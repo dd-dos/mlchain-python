@@ -22,11 +22,11 @@ class Client(HttpClient, GrpcClient):
         self._type = type
         if self._type.lower() == 'http':
             HttpClient.__init__(self, api_key=api_key, api_address=api_address, serializer=serializer,
-                                timeout=timeout, headers=headers, name=name, version=version,
+                                timeout=timeout, headers=self._headers, name=name, version=version,
                                 check_status=check_status)
         elif self._type.lower() == 'grpc':
             GrpcClient.__init__(self, api_key=api_key, api_address=api_address, serializer=serializer,
-                                timeout=timeout, headers=headers, name=name, version=version,
+                                timeout=timeout, headers=self._headers, name=name, version=version,
                                 check_status=check_status)
         else:
             raise Exception("type must be http or grpc")
@@ -56,6 +56,10 @@ class Client(HttpClient, GrpcClient):
         target_audience = self._api_address
 
         id_token = google.oauth2.id_token.fetch_id_token(auth_req, target_audience)
+        if len(id_token) > 0:
+            logger.info("Got oauth2 token.")
+        else:
+            logger.info("Oauth2 token is missing.")
 
         return id_token
 
