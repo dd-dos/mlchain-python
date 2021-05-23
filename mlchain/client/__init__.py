@@ -3,6 +3,7 @@ import google.oauth2.id_token
 import requests
 from mlchain import mlconfig
 from mlchain.base import logger
+from mlchain import mlconfig
 
 from .grpc_client import GrpcClient
 from .http_client import HttpClient
@@ -16,7 +17,11 @@ class Client(HttpClient, GrpcClient):
         self._api_address = api_address
         self._serializer = serializer
         self._timeout = timeout
-        self._headers = headers
+        if mlconfig.platform == 'gcloud':
+            _token = self._get_gcloud_oauth2_token()
+            self._headers = headers.update({"Authorization": f"Bearer {_token}"})
+        else:
+            self._headers = headers
         self._type = type
         if self._type.lower() == 'http':
             HttpClient.__init__(self, api_key=api_key, api_address=api_address, serializer=serializer,
@@ -41,16 +46,7 @@ class Client(HttpClient, GrpcClient):
                               timeout=self._timeout, headers=self._headers, name=name, version=version,
                               check_status=check_status)
 
-
-class GcloudClient(Client):
-    def __init__(self, api_key=None, api_address=None, serializer='json', timeout=5 * 60, headers={}, type='http',
-                 name: str = "", version: str = "", check_status=False):
-        self.id_token = self._get_oauth2_token(api_address)
-        self.headers = {"Authorization": f"Bearer {self.id_token}"}
-        super().__init__(api_key=api_key, api_address=api_address, serializer=serializer, timeout=timeout, headers=self.headers, type=type,
-                         name=name, version=version, check_status=check_status)
-
-    def _get_oauth2_token(self, url):
+    def _get_gcloud_oauth2_token(self):
         """
         new_request creates a new HTTP request with IAM ID Token credential.
         This token is automatically handled by private Cloud Run (fully managed)
@@ -58,7 +54,7 @@ class GcloudClient(Client):
         """
 
         auth_req = google.auth.transport.requests.Request()
-        target_audience = url
+        target_audience = self.api_address
 
         id_token = google.oauth2.id_token.fetch_id_token(auth_req, target_audience)
 
