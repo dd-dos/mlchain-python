@@ -1,6 +1,3 @@
-import google.auth.transport.requests
-import google.oauth2.id_token
-import requests
 from mlchain import mlconfig
 from mlchain.base import logger
 from mlchain import mlconfig
@@ -18,6 +15,9 @@ class Client(HttpClient, GrpcClient):
         self._serializer = serializer
         self._timeout = timeout
         if mlconfig.platform == 'gcloud':
+            import google.auth.transport.requests
+            import google.oauth2.id_token
+            import requests
             _token = self._get_gcloud_oauth2_token()
             self._headers = headers.update({"Authorization": f"Bearer {_token}"})
         else:
