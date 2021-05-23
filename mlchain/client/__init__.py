@@ -53,7 +53,7 @@ class Client(HttpClient, GrpcClient):
         import google.oauth2.id_token
 
         auth_req = google.auth.transport.requests.Request()
-        target_audience = self.api_address
+        target_audience = self._api_address
 
         id_token = google.oauth2.id_token.fetch_id_token(auth_req, target_audience)
 
