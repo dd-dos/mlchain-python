@@ -56,10 +56,11 @@ class Client(HttpClient, GrpcClient):
         target_audience = self._api_address
 
         id_token = google.oauth2.id_token.fetch_id_token(auth_req, target_audience)
-        if len(id_token) > 0:
-            logger.info(f"Got oauth2 token: {id_token}")
-        else:
-            logger.info("Oauth2 token is missing.")
+
+        logger.info("############################################")
+        logger.info(type(id_token))
+        logger.info(id_token)
+        logger.info("############################################")
 
         return id_token
 
