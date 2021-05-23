@@ -15,9 +15,6 @@ class Client(HttpClient, GrpcClient):
         self._serializer = serializer
         self._timeout = timeout
         if mlconfig.platform == 'gcloud':
-            import google.auth.transport.requests
-            import google.oauth2.id_token
-            import requests
             _token = self._get_gcloud_oauth2_token()
             self._headers = headers.update({"Authorization": f"Bearer {_token}"})
         else:
@@ -52,6 +49,8 @@ class Client(HttpClient, GrpcClient):
         This token is automatically handled by private Cloud Run (fully managed)
         and Cloud Functions.
         """
+        import google.auth.transport.requests
+        import google.oauth2.id_token
 
         auth_req = google.auth.transport.requests.Request()
         target_audience = self.api_address
